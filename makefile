@@ -1,2 +1,2 @@
 build:
-	ghc --make Main
+	ghc -threaded --make Main

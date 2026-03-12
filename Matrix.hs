@@ -15,12 +15,16 @@ class Num a => Matrix a where
   transpose :: a -> a
   det :: a -> Float
   idm :: a
+  inverse :: a -> a
 
 instance Matrix Mat2 where
   transpose (Mat2 (Vec2 a b) (Vec2 c d)) = Mat2
     (Vec2 a c) (Vec2 b d)
   det (Mat2 (Vec2 a b) (Vec2 c d)) = a*d - b*c 
   idm = Mat2 (Vec2 1 0) (Vec2 0 1)
+  inverse m@(Mat2 (Vec2 a b) (Vec2 c d)) = Mat2 (Vec2 (d * x) (-b * x)) (Vec2 (-c * x) (a * x))
+    where
+      x = 1.0 / det m
 
 instance Num Mat2 where
   (Mat2 a b) + (Mat2 c d) = Mat2 (a + c) (b + d)
@@ -41,6 +45,12 @@ instance Matrix Mat3 where
     (Vec3 a d g) (Vec3 b e h) (Vec3 c f i)
   det (Mat3 (Vec3 a b c) (Vec3 d e f) (Vec3 g h i)) = a*e*i + b*f*g + c*d*h - c*e*g - b*d*i - a*f*h
   idm = Mat3 (Vec3 1 0 0) (Vec3 0 1 0) (Vec3 0 0 1)
+  inverse m@(Mat3 (Vec3 a b c) (Vec3 d e f) (Vec3 g h i)) = Mat3
+    (Vec3 (x*(e*i - f*h)) (-x*(b*i - c*h)) (x*(b*f - c*e)))
+    (Vec3 (-x*(d*i - f*g)) (x*(a*i - c*g)) (-x*(a*f - c*d)))
+    (Vec3 (x*(d*h - e*g)) (-x*(a*h - b*g)) (x*(a*e - b*d)))
+      where
+        x = 1.0 / det m
 
 
 instance Num Mat3 where
@@ -67,6 +77,7 @@ instance Matrix Mat4 where
     c * (det $ Mat3 (Vec3 e f h) (Vec3 i j l) (Vec3 m n p)) -
     d * (det $ Mat3 (Vec3 e f g) (Vec3 i j k) (Vec3 m n o)))
   idm = Mat4 (Vec4 1 0 0 0) (Vec4 0 1 0 0) (Vec4 0 0 1 0) (Vec4 0 0 0 1)
+  inverse m = m
 
 
 instance Num Mat4 where

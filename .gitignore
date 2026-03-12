@@ -2,3 +2,7 @@
 *.o
 *.swp
 Main
+out.mp4
+output
+output/*
+output.ppm

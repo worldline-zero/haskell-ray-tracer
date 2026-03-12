@@ -17,7 +17,7 @@ import Control.Monad
 data Vertex = Vertex Vec3 Vec3 Vec2
   deriving (Show, Eq)
 
-data Triangle = Tri Vec3 Vec3 Vec3 -- Int -- | NFace [Vertex] Int
+data Triangle = Tri Vertex Vertex Vertex -- Int -- | NFace [Vertex] Int
   deriving (Show, Eq)
 
 data Ambient = Ka Vec3
@@ -49,7 +49,7 @@ wavefrontObj f = do
   mats <- reduceListM (map materials libs)
   let faces = elements contents (map snd mats)
   let model = Model faces (map fst mats)
-  putStrLn $ show model
+  --putStrLn $ show model
   return model
 
 reduceListM :: Monad m => [ m [a] ] -> m [a]
@@ -129,7 +129,8 @@ elements' inp arrs@(ps, ns, ts, ms, idx) fs = case parse element inp of
   [("usemtl", inp')] -> let [(matname, inp'')] = parse (element <|> return "") inp' in
     elements' inp'' (ps, ns, ts, ms, fromMaybe 333333 (elemIndex matname ms)) fs
   [("f", inp')] -> let [(((f1p, f1n, f1t), (f2p, f2n, f2t), (f3p, f3n, f3t)), inp'')] = parse (face <|> return ((0,0,0),(0,0,0),(0,0,0))) inp' in
-    elements' inp'' (ps, ns, ts, ms, idx) (fs ++ [(Tri (ps!!f1p) (ps!!f2p) (ps!!f3p), idx)])
+    elements' inp'' (ps, ns, ts, ms, idx) (fs ++ 
+      [(Tri (Vertex (ps!!f1p) (ns!!f1n) (ts!!f1t)) (Vertex (ps!!f2p) (ns!!f2n) (ts!!f2t)) (Vertex (ps!!f3p) (ns!!f3n) (ts!!f3t)), idx)])
   [(_, inp')] -> elements' inp' arrs fs
   _ -> fs
 
